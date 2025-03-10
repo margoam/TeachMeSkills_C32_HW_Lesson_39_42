@@ -9,8 +9,7 @@ import java.sql.Timestamp;
 
 @Component
 public class Security {
-    @Setter
-    @Getter
+
     private Long id;
     @NotBlank(message = "Login can't be empty")
     private String login;
@@ -18,8 +17,6 @@ public class Security {
     private String password;
     @NotBlank(message = "Role can't be empty")
     private Role role;
-    @Setter
-    @Getter
     private Timestamp created;
 
     public @NotBlank(message = "Login can't be empty") String getLogin() {
@@ -45,11 +42,38 @@ public class Security {
     public void setRole(@NotBlank(message = "Role can't be empty") Role role) {
         this.role = role;
     }
-
-    @Setter
-    @Getter
     private Timestamp updated;
-    @Setter
-    @Getter
     private Long userId;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Timestamp getCreated() {
+        return created;
+    }
+
+    public void setCreated(Timestamp created) {
+        this.created = created;
+    }
+
+    public Timestamp getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(Timestamp updated) {
+        this.updated = updated;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 }

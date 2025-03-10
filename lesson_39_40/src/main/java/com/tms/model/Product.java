@@ -1,6 +1,7 @@
 package com.tms.model;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
@@ -9,8 +10,6 @@ import java.sql.Timestamp;
 
 @Component
 public class Product {
-    @Setter
-    @Getter
     private Long id;
     @NotNull
     private String name;
@@ -33,10 +32,30 @@ public class Product {
 
     @NotNull
     private Double price;
-    @Setter
-    @Getter
     private Timestamp created;
-    @Setter
-    @Getter
     private Timestamp updated;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Timestamp getCreated() {
+        return created;
+    }
+
+    public void setCreated(Timestamp created) {
+        this.created = created;
+    }
+
+    public Timestamp getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(Timestamp updated) {
+        this.updated = updated;
+    }
 }

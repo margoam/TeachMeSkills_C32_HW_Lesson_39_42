@@ -1,7 +1,6 @@
 package com.tms.service;
 
 import com.tms.model.Product;
-import com.tms.service.ProductService;
 import com.tms.utils.DbConnection;
 import org.springframework.stereotype.Service;
 

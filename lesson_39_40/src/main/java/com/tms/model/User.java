@@ -9,15 +9,12 @@ import java.sql.Timestamp;
 
 @Component
 public class User {
-    @Setter
-    @Getter
+
     private Long id;
     @NotBlank(message = "Name can't be empty")
     private String firstname;
     @NotBlank(message = "Lastname can't be empty")
     private String secondName;
-    @Setter
-    @Getter
     private Integer age;
 
     public @NotBlank(message = "Name can't be empty") String getFirstname() {
@@ -43,24 +40,75 @@ public class User {
     public void setDeleted(Boolean deleted) {
         isDeleted = deleted;
     }
-
-    @Setter
-    @Getter
     private String email;
-    @Setter
-    @Getter
     private String sex;
-    @Setter
-    @Getter
     private String telephoneNumber;
-    @Setter
-    @Getter
     private Timestamp created;
-    @Setter
-    @Getter
     private Timestamp updated;
     private Boolean isDeleted;
-    @Getter
-    @Setter
     private Security securityInfo;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
+    public String getTelephoneNumber() {
+        return telephoneNumber;
+    }
+
+    public void setTelephoneNumber(String telephoneNumber) {
+        this.telephoneNumber = telephoneNumber;
+    }
+
+    public Timestamp getCreated() {
+        return created;
+    }
+
+    public void setCreated(Timestamp created) {
+        this.created = created;
+    }
+
+    public Timestamp getUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(Timestamp updated) {
+        this.updated = updated;
+    }
+
+    public Security getSecurityInfo() {
+        return securityInfo;
+    }
+
+    public void setSecurityInfo(Security securityInfo) {
+        this.securityInfo = securityInfo;
+    }
 }

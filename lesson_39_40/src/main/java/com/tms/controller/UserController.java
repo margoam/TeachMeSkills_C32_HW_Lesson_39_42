@@ -31,7 +31,13 @@ public class UserController {
     public String getUserById(@PathVariable("id") Long id, Model model) {
         User user = userService.getUserById(id);
         model.addAttribute("user", user);
-        return "users";
+        return "user";
+    }
+
+    @PostMapping
+    public String createUser(@ModelAttribute User user) {
+        userService.createUser(user);
+        return "redirect:/users";
     }
 
     @PostMapping("/{id}/update")
