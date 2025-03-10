@@ -2,8 +2,6 @@ package com.tms.service;
 
 import com.tms.model.Role;
 import com.tms.model.Security;
-import com.tms.model.dto.RegistrationRequestDto;
-import com.tms.repository.SecurityRepository;
 import com.tms.utils.DbConnection;
 import org.springframework.stereotype.Service;
 
@@ -11,12 +9,6 @@ import java.sql.*;
 
 @Service
 public class SecurityServiceImpl implements SecurityService {
-
-    public final SecurityRepository securityRepository;
-
-    public SecurityServiceImpl(SecurityRepository securityRepository) {
-        this.securityRepository = securityRepository;
-    }
 
     @Override
     public Security getSecurityByUserId(Long userId) {
@@ -52,12 +44,18 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     @Override
-    public Boolean registration(RegistrationRequestDto requestDto) {
-        try {
-            return securityRepository.registration(requestDto);
+    public void updateSecurity(Security security) {
+        String sql = "UPDATE public.security SET login = ?, password = ?, role = ?, updated = ? WHERE user_id = ?";
+        try (Connection connection = DbConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, security.getLogin());
+            preparedStatement.setString(2, security.getPassword());
+            preparedStatement.setString(3, security.getRole().toString());
+            preparedStatement.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+            preparedStatement.setLong(5, security.getUserId());
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            return false;
+            throw new RuntimeException("Error updating security for userId: " + security.getUserId(), e);
         }
     }
 
