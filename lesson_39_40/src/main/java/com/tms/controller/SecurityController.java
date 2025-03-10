@@ -1,38 +1,34 @@
 package com.tms.controller;
 
-import com.tms.model.dto.RegistrationRequestDto;
+import com.tms.model.Security;
 import com.tms.service.SecurityService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/security")
 public class SecurityController {
 
-    public SecurityService securityService;
+    private final SecurityService securityService;
 
     @Autowired
     public SecurityController(SecurityService securityService) {
         this.securityService = securityService;
     }
 
-    @GetMapping("/registration")
-    public String registration() {
-        return "registration";
+    @GetMapping("/{userId}")
+    public String getSecurityByUserId(@PathVariable("userId") Long userId, Model model) {
+        Security security = securityService.getSecurityByUserId(userId);
+        model.addAttribute("security", security);
+        return "security";
     }
 
-    @PostMapping("/registration")
-    public String registration(@ModelAttribute @Valid RegistrationRequestDto requestDto,
-                               BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            System.out.println(bindingResult.getAllErrors());
-            return "registration";
-        }
-
-        securityService.registration(requestDto);
-        return "redirect:/users";
+    @PostMapping("/{userId}/update")
+    public String updateSecurity(@PathVariable("userId") Long userId, @ModelAttribute Security security) {
+        security.setUserId(userId);
+        securityService.updateSecurity(security);
+        return "redirect:/security/" + userId;
     }
 }
