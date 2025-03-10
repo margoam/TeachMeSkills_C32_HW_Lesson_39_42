@@ -14,7 +14,7 @@
 </head>
 <body>
 <h2>Create New User</h2>
-<form action="/users" method="post">
+<form action="/users/create" method="post">
     <label for="firstname">First Name:</label>
     <input type="text" id="firstname" name="firstname" required /><br/>
 
