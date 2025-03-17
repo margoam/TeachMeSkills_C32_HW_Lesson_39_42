@@ -1,44 +1,51 @@
 <%--
   Created by IntelliJ IDEA.
   User: mozhe
-  Date: 09.03.2025
-  Time: 20:55
+  Date: 16.03.2025
+  Time: 20:53
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Create User</title>
+  <title>Create user</title>
 </head>
 <body>
-<h2>Create New User</h2>
-<form action="/users/create" method="post">
-    <label for="firstname">First Name:</label>
-    <input type="text" id="firstname" name="firstname" required /><br/>
+<h2>Create user</h2>
+<form action="create" method="POST">
+  <div>
+    <label for="firstname">First name:</label>
+    <input type="text" id="firstname" name="firstname">
+  </div>
 
-    <label for="secondName">Second Name:</label>
-    <input type="text" id="secondName" name="secondName" required /><br/>
+  <div>
+    <label for="secondName">Second name:</label>
+    <input type="text" id="secondName" name="secondName">
+  </div>
 
+  <div>
     <label for="age">Age:</label>
-    <input type="number" id="age" name="age" required /><br/>
+    <input type="number" id="age" name="age">
+  </div>
 
-    <label for="telephoneNumber">Phone:</label>
-    <input type="text" id="telephoneNumber" name="telephoneNumber" required /><br/>
 
+  <div>
     <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required /><br/>
+    <input type="email" id="email" name="email">
+  </div>
 
+  <div>
     <label for="sex">Sex:</label>
-    <select id="sex" name="sex" required>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-    </select><br/>
+    <input type="text" id="sex" name="sex">
+  </div>
 
-    <input type="submit" value="Create User" />
+  <div>
+    <label for="telephoneNumber">Telephone number:</label>
+    <input type="text" id="telephoneNumber" name="telephoneNumber">
+  </div>
+
+
+  <input type="submit" value="Create user">
 </form>
-<br/>
-<a href="${pageContext.request.contextPath}/users">Back to Users List</a>
 </body>
 </html>

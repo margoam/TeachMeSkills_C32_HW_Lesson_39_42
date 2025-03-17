@@ -8,42 +8,27 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>User Details</title>
+    <title>User information</title>
 </head>
 <body>
-<h2>User Details</h2>
-<form action="/users/${user.id}/update" method="post">
-    <input type="hidden" name="_method" value="PUT" />
-    <label for="firstname">First Name:</label>
-    <input type="text" id="firstname" name="firstname" value="${user.firstname}" required /><br/>
+<h1>User information:</h1>
+<p>Id: ${user.id}</p>
+<p>First name: ${user.firstname}</p>
+<p>Second name: ${user.secondName}</p>
+<p>Age: ${user.age}</p>
+<p>Telephone number: ${user.telephoneNumber}</p>
+<p>Sex: ${user.sex}</p>
+<p>Created: ${user.created}</p>
+<p>Updated: ${user.updated}</p>
+<p>Deleted: ${user.deleted}</p>
 
-    <label for="secondName">Second Name:</label>
-    <input type="text" id="secondName" name="secondName" value="${user.secondName}" required /><br/>
-
-    <label for="age">Age:</label>
-    <input type="number" id="age" name="age" value="${user.age}" required /><br/>
-
-    <label for="telephoneNumber">Phone:</label>
-    <input type="text" id="telephoneNumber" name="telephoneNumber" value="${user.telephoneNumber}" required /><br/>
-
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" value="${user.email}" required /><br/>
-
-    <label for="sex">Sex:</label>
-    <select id="sex" name="sex" required>
-        <option value="Male" ${user.sex == 'Male' ? 'selected' : ''}>Male</option>
-        <option value="Female" ${user.sex == 'Female' ? 'selected' : ''}>Female</option>
-    </select><br/>
-
-    <input type="submit" value="Update" />
+<form action="/user" method="get">
+    <input type="hidden" id="id" name="userId" value="${user.id}" />
+    <button type="submit" class="btn">Update user</button>
 </form>
-<br/>
-<form action="/users/${user.id}/delete" method="post" style="display:inline;">
-    <input type="submit" value="Delete User" />
+<form action="/user/delete" method="post">
+    <input type="hidden" id="userId" name="userId" value="${user.id}" />
+    <button type="submit" class="btn">Delete user</button>
 </form>
-<br/>
-<a href="/users">Back to Users List</a>
 </body>
 </html>
-

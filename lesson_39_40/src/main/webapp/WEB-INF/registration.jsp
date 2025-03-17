@@ -12,7 +12,7 @@
 </head>
 <body>
 <h2>Registration</h2>
-<form action="/security/registration" method="post">
+<form action="/registration" method="POST">
     <label for="firstname">First name:</label>
     <input type="text" id="firstname" name="firstname" >
 
@@ -39,7 +39,7 @@
 
     <input type="submit" value="Registration">
 </form>
-<a href="/security/login">You have already an account?</a>
+<a href="login">You have already an account?</a>
 </body>
 </html>
 

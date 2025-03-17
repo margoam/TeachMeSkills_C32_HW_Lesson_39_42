@@ -2,6 +2,7 @@ package com.tms.controller;
 
 import com.tms.model.Product;
 import com.tms.service.ProductService;
+import com.tms.service.ProductServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,24 +12,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/products")
 public class ProductController {
 
-    private final ProductService productService;
+    private final ProductServiceImpl productService;
 
     @Autowired
-    public ProductController(ProductService productService) {
+    public ProductController(ProductServiceImpl productService) {
         this.productService = productService;
-    }
-
-    @GetMapping
-    public String getAllProducts(Model model) {
-        model.addAttribute("products", productService.getAllProducts());
-        return "products";
-    }
-
-    @GetMapping("/{id}")
-    public String getProductById(@PathVariable("id") Long id, Model model) {
-        Product product = productService.getProductById(id);
-        model.addAttribute("product", product);
-        return "product";
     }
 
     @PostMapping

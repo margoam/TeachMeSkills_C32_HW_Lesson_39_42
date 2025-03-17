@@ -1,73 +1,49 @@
 package com.tms.service;
 
-import com.tms.model.Role;
 import com.tms.model.Security;
-import com.tms.utils.DbConnection;
+import com.tms.model.dto.RegistrationDto;
+import com.tms.repository.SecurityRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.*;
+import java.sql.SQLException;
+import java.util.Optional;
 
 @Service
 public class SecurityServiceImpl implements SecurityService {
 
-    @Override
-    public Security getSecurityByUserId(Long userId) {
-        String sql = "SELECT * FROM public.security WHERE user_id = ?";
-        try (Connection connection = DbConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setLong(1, userId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return mapRowToSecurity(resultSet);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error fetching security for userId: " + userId, e);
-        }
-        return null;
+    public final SecurityRepository securityRepository;
+
+    @Autowired
+    public SecurityServiceImpl(SecurityRepository securityRepository) {
+        this.securityRepository = securityRepository;
     }
 
     @Override
-    public void createSecurity(Security security) {
-        String sql = "INSERT INTO public.security (login, password, role, created, updated, user_id) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection connection = DbConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, security.getLogin());
-            preparedStatement.setString(2, security.getPassword());
-            preparedStatement.setString(3, security.getRole().toString());
-            preparedStatement.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
-            preparedStatement.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
-            preparedStatement.setLong(6, security.getUserId());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Error creating security for userId: " + security.getUserId(), e);
+    public Optional<Security> updateSecurity(Security security) throws SQLException {
+        Boolean result = securityRepository.updateSecurity(security);
+        if (result) {
+            return getSecurityById(security.getId());
         }
+        return Optional.empty();
     }
 
     @Override
-    public void updateSecurity(Security security) {
-        String sql = "UPDATE public.security SET login = ?, password = ?, role = ?, updated = ? WHERE user_id = ?";
-        try (Connection connection = DbConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, security.getLogin());
-            preparedStatement.setString(2, security.getPassword());
-            preparedStatement.setString(3, security.getRole().toString());
-            preparedStatement.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
-            preparedStatement.setLong(5, security.getUserId());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Error updating security for userId: " + security.getUserId(), e);
-        }
+    public void registration(RegistrationDto requestDto) throws SQLException {
+        securityRepository.registration(requestDto);
     }
 
-    private Security mapRowToSecurity(ResultSet resultSet) throws SQLException {
-        Security security = new Security();
-        security.setId(resultSet.getLong("id"));
-        security.setLogin(resultSet.getString("login"));
-        security.setPassword(resultSet.getString("password"));
-        security.setRole(Role.valueOf(resultSet.getString("role")));
-        security.setCreated(resultSet.getTimestamp("created"));
-        security.setUpdated(resultSet.getTimestamp("updated"));
-        security.setUserId(resultSet.getLong("user_id"));
-        return security;
+    @Override
+    public Optional<Security> getSecurityById(Long id) {
+        return securityRepository.getSecurityById(id);
+    }
+
+    @Override
+    public Optional<Security> deleteSecurity(Long id) {
+        Boolean result = securityRepository.deleteSecurity(id);
+        if (result) {
+            return getSecurityById(id);
+        }
+        return Optional.empty();
     }
 }

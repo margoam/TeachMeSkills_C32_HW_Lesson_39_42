@@ -2,16 +2,16 @@ package com.tms.service;
 
 import com.tms.model.User;
 
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
-    User getUserById(Long id);
+    Optional<User> getUserById(Long id);
 
-    List<User> getAllUsers();
+    Optional<User> createUser(User user) throws SQLException;
 
-    void createUser(User user);
+    Optional<User> updateUser(User user);
 
-    void updateUser(User user);
-
-    void deleteUser(Long id);
+    Optional<User> deleteUser(Long id);
 }
