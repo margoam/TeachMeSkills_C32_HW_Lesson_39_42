@@ -27,6 +27,7 @@ public class UserController {
         List<User> users = userService.getAllUsers();
         if (users.isEmpty()) {
             model.addAttribute("message", "No users found");
+            return "innerError";
         }
         model.addAttribute("users", users);
         return "users";
