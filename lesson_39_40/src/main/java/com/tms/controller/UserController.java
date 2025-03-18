@@ -25,6 +25,9 @@ public class UserController {
     @GetMapping("/all-users")
     public String getAllUsers(Model model) {
         List<User> users = userService.getAllUsers();
+        if (users.isEmpty()) {
+            model.addAttribute("message", "No users found");
+        }
         model.addAttribute("users", users);
         return "users";
     }
