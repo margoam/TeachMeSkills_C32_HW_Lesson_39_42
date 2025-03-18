@@ -1,4 +1,4 @@
-package com.tms.exceprion;
+package com.tms.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
