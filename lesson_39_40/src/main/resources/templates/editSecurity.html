@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Security</title>
+</head>
+<body>
+<h1>Edit Security</h1>
+<form th:action="@{/security/update}" method="post">
+    <div>
+        <label for="login">Login:</label>
+        <input type="text" id="login" name="login" th:value="${security.login}" required>
+    </div>
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" th:value="${security.password}" required>
+    </div>
+    <div>
+        <input type="hidden" id="id" name="id" th:value="${security.id}" />
+        <button type="submit">Save changes</button>
+    </div>
+</form>
+</body>
+</html>

@@ -2,7 +2,7 @@ package com.tms.controller;
 
 import com.tms.model.Security;
 import com.tms.model.dto.RegistrationDto;
-import com.tms.service.SecurityServiceImpl;
+import com.tms.service.SecurityService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +19,10 @@ import java.util.Optional;
 @RequestMapping("/security")
 public class SecurityController {
 
-    public SecurityServiceImpl securityService;
+    private final SecurityService securityService;
 
     @Autowired
-    public SecurityController(SecurityServiceImpl securityService) {
+    public SecurityController(SecurityService securityService) {
         this.securityService = securityService;
     }
 
@@ -31,7 +31,19 @@ public class SecurityController {
         return "registration";
     }
 
-    //create (with user creation)
+    @GetMapping("/edit/{id}")
+    public String getSecurityById(@PathVariable("id") Long id, Model model, HttpServletResponse response) {
+        Optional<Security> security = securityService.getSecurityById(id);
+        if (security.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            model.addAttribute("message", "Security not found: id=" + id);
+            return "innerError";
+        }
+        model.addAttribute("security", security.get());
+        return "editSecurity";
+    }
+
+    // Create (with user creation)
     @PostMapping("/registration")
     public String registration(@ModelAttribute @Valid RegistrationDto requestDto,
                                BindingResult bindingResult) throws SQLException {
@@ -40,34 +52,46 @@ public class SecurityController {
             return "registration";
         }
         securityService.registration(requestDto);
-        return "user";
+        return "redirect:/user/all-users";
     }
 
-    //update
-    @PostMapping
-    public String updateSecurity(@ModelAttribute("security") Security security, Model model, HttpServletResponse response) throws SQLException {
+    // Update
+    @PostMapping("/update")
+    public String updateSecurity(@ModelAttribute("security") Security security,
+                                 Model model,
+                                 HttpServletResponse response) {
         Optional<Security> securityUpdated = securityService.updateSecurity(security);
-        if (!securityUpdated.isPresent()) {
-            response.setStatus(HttpServletResponse.SC_CONFLICT);
-            model.addAttribute("message", "Login and password were not updated.");
+        if (securityUpdated.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            model.addAttribute("message", "Security not found.");
             return "innerError";
         }
-        response.setStatus(HttpServletResponse.SC_OK);
-        model.addAttribute("security", securityUpdated.get());
-        return "user";
+        return "redirect:/user/all-users";
     }
 
-    //Delete
-    @PostMapping("/delete/{id}")
-    public String deleteSecurity(@RequestParam("id") Long id, Model model, HttpServletResponse response) {
+    // Delete
+    @PostMapping("/delete")
+    public String deleteSecurity(@RequestParam("id") Long id,
+                                 Model model,
+                                 HttpServletResponse response) {
         Optional<Security> securityDeleted = securityService.deleteSecurity(id);
-        if (!securityDeleted.isPresent()) {
+        if (securityDeleted.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_CONFLICT);
-            model.addAttribute("message", "Login and password are not deleted.");
+            model.addAttribute("message", "Security is not deleted.");
             return "innerError";
         }
-        response.setStatus(HttpServletResponse.SC_OK);
-        model.addAttribute("security", securityDeleted.get());
-        return "user";
+        return "redirect:/user/all-users";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String showDeleteSecurityPage(@PathVariable("id") Long id, Model model, HttpServletResponse response) {
+        Optional<Security> security = securityService.getSecurityById(id);
+        if (security.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            model.addAttribute("message", "Security not found: id=" + id);
+            return "innerError";
+        }
+        model.addAttribute("security", security.get());
+        return "deleteSecurity";
     }
 }

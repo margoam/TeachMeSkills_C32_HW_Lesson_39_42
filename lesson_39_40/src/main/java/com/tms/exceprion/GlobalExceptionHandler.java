@@ -1,9 +1,11 @@
 package com.tms.exceprion;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.sql.SQLException;
 
@@ -11,20 +13,29 @@ import java.sql.SQLException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public String handleValidationExceptions(MethodArgumentNotValidException ex, Model model) {
-        model.addAttribute("error", "validation Error: " + ex.getBindingResult());
-        return "error";
+    public ModelAndView handleValidationExceptions(MethodArgumentNotValidException ex) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("innerError");
+        modelAndView.addObject("message", ex.getMessage());
+        modelAndView.setStatus(HttpStatus.BAD_REQUEST);
+        return modelAndView;
     }
 
     @ExceptionHandler(SQLException.class)
-    public String handleSQLException(SQLException ex, Model model) {
-        model.addAttribute("error", "Db error: " + ex.getMessage());
-        return "error";
+    public ModelAndView handleSQLException(SQLException ex, Model model) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("innerError");
+        modelAndView.addObject("message", ex.getMessage());
+        modelAndView.setStatus(HttpStatus.BAD_REQUEST);
+        return modelAndView;
     }
 
     @ExceptionHandler(Exception.class)
-    public String handleGeneralException(Exception ex, Model model) {
-        model.addAttribute("error", "General error: " + ex.getMessage());
-        return "error";
+    public ModelAndView handleGeneralException(Exception ex, Model model) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("innerError");
+        modelAndView.addObject("message", ex.getMessage());
+        modelAndView.setStatus(HttpStatus.BAD_REQUEST);
+        return modelAndView;
     }
 }

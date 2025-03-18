@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -33,7 +35,7 @@ public class UserRepository {
         }
     }
 
-    public Boolean deleteUser(Long id){
+    public Boolean deleteUser(Long id) {
         Connection connection = databaseService.getConnection();
         try {
             PreparedStatement getUserStatement = connection.prepareStatement(SqlQuery.DELETE_USER);
@@ -45,7 +47,7 @@ public class UserRepository {
         }
     }
 
-    public Optional<Long> createUser(User user){
+    public Optional<Long> createUser(User user) {
         Connection connection = databaseService.getConnection();
         Long userId = null;
 
@@ -66,7 +68,7 @@ public class UserRepository {
                 userId = generatedKeys.getLong(1);
             }
             return Optional.of(userId);
-        } catch (SQLException e){
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
             return Optional.empty();
         }
@@ -107,5 +109,34 @@ public class UserRepository {
             return Optional.of(user);
         }
         return Optional.empty();
+    }
+
+    public List<User> findAll() {
+        Connection connection = databaseService.getConnection();
+        List<User> users = new ArrayList<>();
+
+        try {
+            PreparedStatement getUsersStatement = connection.prepareStatement(SqlQuery.GET_USERS);
+            ResultSet resultSet = getUsersStatement.executeQuery();
+
+            while (resultSet.next()) {
+                User user = new User();
+                user.setId(resultSet.getLong("id"));
+                user.setFirstname(resultSet.getString("firstname"));
+                user.setSecondName(resultSet.getString("secondname"));
+                user.setAge(resultSet.getInt("age"));
+                user.setTelephoneNumber(resultSet.getString("mobile_phone"));
+                user.setEmail(resultSet.getString("email"));
+                user.setCreated(resultSet.getTimestamp("created"));
+                user.setUpdated(resultSet.getTimestamp("updated"));
+                user.setSex(resultSet.getString("sex"));
+                user.setDeleted(resultSet.getBoolean("is_deleted"));
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return users;
     }
 }

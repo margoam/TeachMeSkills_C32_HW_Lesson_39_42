@@ -8,6 +8,7 @@ public interface SqlQuery {
     String UPDATE_USER = "UPDATE users SET firstname=?,secondname=?,age=?,mobile_phone=?,email=?,sex=?,updated=DEFAULT WHERE id=?";
     String CREATE_USER = "INSERT INTO users (id, firstname, secondname, age, mobile_phone, email, created, updated, sex, is_deleted) " +
             "VALUES (DEFAULT, ?, ?, ?, ?, ?, DEFAULT, ?, ?, ?)";
+    String GET_USERS = "SELECT * FROM users";
 
     //Security
     String GET_SECURITY_BY_ID = "SELECT * FROM security WHERE id = ?";
@@ -21,4 +22,5 @@ public interface SqlQuery {
     String CREATE_PRODUCT = "INSERT INTO public.product (id, name, price, created, updated) VALUES (DEFAULT, ?, ?, ?, ?)";
     String UPDATE_PRODUCT = "UPDATE product SET name=?,price=?,updated=DEFAULT WHERE id=?";
     String DELETE_PRODUCT = "DELETE from product WHERE id=?";
+    String GET_PRODUCTS = "SELECT * FROM product";
 }

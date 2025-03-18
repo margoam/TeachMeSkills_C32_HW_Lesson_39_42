@@ -1,6 +1,8 @@
 package com.tms.utils;
 
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
@@ -11,9 +13,12 @@ import java.sql.SQLException;
 @Component
 public class DbConnection {
 
-    private static final String URL = "jdbc:postgresql://localhost:5432/db-lesson-mvc";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "123";
+    public Environment environment;
+
+    @Autowired
+    public DbConnection(Environment environment) {
+        this.environment = environment;
+    }
 
     {
         try {
@@ -23,9 +28,12 @@ public class DbConnection {
         }
     }
 
-    public static Connection getConnection() {
+    public Connection getConnection() {
         try {
-            return DriverManager.getConnection(URL, USER, PASSWORD);
+            return DriverManager.getConnection(
+                    environment.getProperty("spring.datasource.url"),
+                    environment.getProperty("spring.datasource.username"),
+                    environment.getProperty("spring.datasource.password"));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

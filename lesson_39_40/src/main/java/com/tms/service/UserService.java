@@ -1,17 +1,53 @@
 package com.tms.service;
 
 import com.tms.model.User;
+import com.tms.repository.UserRepository;
 
-import java.sql.SQLException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
-public interface UserService {
-    Optional<User> getUserById(Long id);
+@Service
+public class UserService {
 
-    Optional<User> createUser(User user) throws SQLException;
+    private final UserRepository userRepository;
 
-    Optional<User> updateUser(User user);
+    @Autowired
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
-    Optional<User> deleteUser(Long id);
+    public Optional<User> getUserById(Long id) {
+        return userRepository.getUserById(id);
+    }
+
+    public Optional<User> updateUser(User user) {
+        Boolean result = userRepository.updateUser(user);
+        if (result) {
+            return getUserById(user.getId());
+        }
+        return Optional.empty();
+    }
+
+    public Optional<User> deleteUser(Long id) {
+        Boolean result = userRepository.deleteUser(id);
+        if (result) {
+            return getUserById(id);
+        }
+        return Optional.empty();
+    }
+
+    public Optional<User> createUser(User user) {
+        Optional<Long> userId = userRepository.createUser(user);
+        if (userId.isPresent()) {
+            return getUserById(userId.get());
+        }
+        return Optional.empty();
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
 }

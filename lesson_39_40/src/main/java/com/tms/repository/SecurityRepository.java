@@ -3,11 +3,11 @@ package com.tms.repository;
 import com.tms.config.SqlQuery;
 import com.tms.model.Role;
 import com.tms.model.Security;
-import com.tms.model.User;
 import com.tms.model.dto.RegistrationDto;
 import com.tms.utils.DbConnection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 
 import java.sql.*;
 import java.util.Optional;
@@ -24,7 +24,6 @@ public class SecurityRepository {
 
     public void registration(RegistrationDto requestDto) throws SQLException {
         Connection connection = databaseService.getConnection();
-
         try {
             connection.setAutoCommit(false);
             PreparedStatement createUserStatement = connection.prepareStatement(SqlQuery.CREATE_USER, Statement.RETURN_GENERATED_KEYS);
@@ -54,47 +53,48 @@ public class SecurityRepository {
 
             connection.commit();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             connection.rollback();
+            throw new SQLException("Registration failed: " + e.getMessage(), e);
+        } finally {
+            connection.setAutoCommit(true);
         }
     }
 
-    public Boolean updateSecurity(Security security) throws SQLException {
+    public Boolean updateSecurity(Security security) {
         Connection connection = databaseService.getConnection();
-
         try {
-            PreparedStatement getSecurityStatement = connection.prepareStatement(SqlQuery.UPDATE_SECURITY);
-            getSecurityStatement.setString(1, security.getLogin());
-            getSecurityStatement.setString(1, security.getPassword());
-            return getSecurityStatement.executeUpdate() > 0;
+            PreparedStatement statement = connection.prepareStatement(SqlQuery.UPDATE_SECURITY);
+            statement.setString(1, security.getLogin());
+            statement.setString(2, security.getPassword());
+            statement.setLong(3, security.getId());
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error updating security: " + e.getMessage());
             return false;
         }
     }
 
     public Optional<Security> getSecurityById(Long id) {
         Connection connection = databaseService.getConnection();
-
         try {
-            PreparedStatement getSecurityStatement = connection.prepareStatement(SqlQuery.GET_SECURITY_BY_ID);
-            getSecurityStatement.setLong(1, id);
-            ResultSet resultSet = getSecurityStatement.executeQuery();
+            PreparedStatement statement = connection.prepareStatement(SqlQuery.GET_SECURITY_BY_ID);
+            statement.setLong(1, id);
+            ResultSet resultSet = statement.executeQuery();
             return parseSecurity(resultSet);
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error finding security by ID: " + e.getMessage());
             return Optional.empty();
         }
     }
 
-    public Boolean deleteSecurity(Long id){
+    public Boolean deleteSecurity(Long id) {
         Connection connection = databaseService.getConnection();
         try {
-            PreparedStatement getSecurityStatement = connection.prepareStatement(SqlQuery.DELETE_SECURITY);
-            getSecurityStatement.setLong(1, id);
-            return getSecurityStatement.executeUpdate() > 0;
+            PreparedStatement statement = connection.prepareStatement(SqlQuery.DELETE_SECURITY);
+            statement.setLong(1, id);
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error deleting security: " + e.getMessage());
             return false;
         }
     }
