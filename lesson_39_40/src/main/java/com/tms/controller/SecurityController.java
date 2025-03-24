@@ -31,6 +31,15 @@ public class SecurityController {
             @ApiResponse(description = "When something wrong.", responseCode = "409")
     })
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Security> getSecurityById(@PathVariable("id") Long id) {
+        Optional<Security> security = securityService.getSecurityById(id);
+        if (security.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(security.get(), HttpStatus.OK);
+    }
+
     // Create (with user creation)
     @PostMapping("/registration")
     public ResponseEntity<RegistrationDto> registration(@RequestBody RegistrationDto requestDto,
@@ -54,7 +63,7 @@ public class SecurityController {
     }
 
     // Delete
-    @PostMapping("/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteSecurity(@PathVariable("id") @Parameter(description = "Security id") Long id) {
         Optional<Security> securityDeleted = securityService.deleteSecurity(id);
         if (securityDeleted.isEmpty()) {
@@ -62,5 +71,4 @@ public class SecurityController {
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 }

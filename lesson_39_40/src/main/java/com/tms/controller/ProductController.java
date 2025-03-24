@@ -1,6 +1,7 @@
 package com.tms.controller;
 
 import com.tms.model.Product;
+import com.tms.model.User;
 import com.tms.service.ProductService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,6 +41,15 @@ public class ProductController {
                     .body(Collections.singletonMap("message", "No products found"));
         }
         return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Product> getProductById(@PathVariable("id") Long id) {
+        Optional<Product> product = productService.getProductById(id);
+        if (product.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(product.get(), HttpStatus.OK);
     }
 
     @PostMapping("/create")
