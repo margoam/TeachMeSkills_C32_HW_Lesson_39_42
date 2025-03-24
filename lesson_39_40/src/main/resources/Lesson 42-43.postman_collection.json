@@ -11,6 +11,26 @@
 			"item": [
 				{
 					"name": "Get all users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Data is present, response code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(200);\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an('array');\r",
+									"    pm.expect(jsonData[0]).to.have.property('firstname');\r",
+									"});\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -145,6 +165,23 @@
 				},
 				{
 					"name": "Create user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"User is created\", function() {\r",
+									"pm.expect(pm.response.code).to.equal(201);\r",
+									"let jsonData = pm.response.json();\r",
+									"pm.expect(jsonData).to.have.property('id');\r",
+									"pm.expect(jsonData.email).to.equal(\"test@a.com\");\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [],
