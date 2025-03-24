@@ -2,17 +2,22 @@ package com.tms.controller;
 
 import com.tms.model.Product;
 import com.tms.service.ProductService;
-import jakarta.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/products")
+@RequestMapping("api/products")
 public class ProductController {
 
     private final ProductService productService;
@@ -22,58 +27,45 @@ public class ProductController {
         this.productService = productService;
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(description = "When product created.", responseCode = "201"),
+            @ApiResponse(description = "When something wrong.", responseCode = "409")
+    })
+
     @GetMapping("all-products")
-    public String getAllProducts(Model model) {
+    public ResponseEntity<?> getAllProducts(Model model) {
         List<Product> products = productService.getAllProducts();
-        model.addAttribute("products", products);
-        return "products";
-    }
-
-    @GetMapping("/create")
-    public String getProductCreatePage() { return "createProduct";}
-
-    @GetMapping("/edit/{id}")
-    public String getProductUpdatePage(@PathVariable("id") Long id, Model model, HttpServletResponse response) {
-        Optional<Product> product = productService.getProductById(id);
-        if (product.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            model.addAttribute("message", "Product not found: id=" + id);
-            return "innerError";
+        if (products.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.singletonMap("message", "No products found"));
         }
-        model.addAttribute("product", product.get());
-        return "editProduct";
+        return ResponseEntity.ok(products);
     }
 
     @PostMapping("/create")
-    public String createProduct(@ModelAttribute("product") Product product, HttpServletResponse response, Model model) {
+    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
         Optional<Product> createdProduct = productService.createProduct(product);
         if (createdProduct.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_CONFLICT);
-            model.addAttribute("message", "Product not created");
-            return "innerError";
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        return "redirect:/products/all-products";
+        return new ResponseEntity<>(createdProduct.get(), HttpStatus.CREATED);
     }
 
-    @PostMapping("/update")
-    public String updateProduct(@ModelAttribute("product") Product product, Model model, HttpServletResponse response) {
+    @PutMapping("/update")
+    public ResponseEntity<Product> updateProduct(@RequestBody Product product) {
         Optional<Product> productUpdated = productService.updateProduct(product);
         if (productUpdated.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_CONFLICT);
-            model.addAttribute("message", "Product not updated.");
-            return "innerError";
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        return "redirect:/products/all-products";
+        return new ResponseEntity<>(productUpdated.get(), HttpStatus.OK);
     }
 
-    @PostMapping("/delete")
-    public String deleteProduct(@RequestParam("id") Long id, Model model, HttpServletResponse response) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deleteProduct(@PathVariable("id") @Parameter(description = "Product id") Long id) {
         Optional<Product> deletedProduct = productService.deleteProduct(id);
         if (deletedProduct.isPresent()) {
-            response.setStatus(HttpServletResponse.SC_CONFLICT);
-            model.addAttribute("message", "Product is not deleted.");
-            return "innerError";
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        return "redirect:/products/all-products";
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
