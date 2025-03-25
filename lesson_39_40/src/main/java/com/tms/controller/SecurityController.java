@@ -3,20 +3,20 @@ package com.tms.controller;
 import com.tms.model.Security;
 import com.tms.model.dto.RegistrationDto;
 import com.tms.service.SecurityService;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.Optional;
 
-
-@Controller
-@RequestMapping("/security")
+@RestController
+@RequestMapping("api/security")
 public class SecurityController {
 
     private final SecurityService securityService;
@@ -26,72 +26,49 @@ public class SecurityController {
         this.securityService = securityService;
     }
 
-    @GetMapping("/registration")
-    public String registration() {
-        return "registration";
-    }
+    @ApiResponses(value = {
+            @ApiResponse(description = "When dto created.", responseCode = "201"),
+            @ApiResponse(description = "When something wrong.", responseCode = "409")
+    })
 
-    @GetMapping("/edit/{id}")
-    public String getSecurityById(@PathVariable("id") Long id, Model model, HttpServletResponse response) {
+    @GetMapping("/{id}")
+    public ResponseEntity<Security> getSecurityById(@PathVariable("id") Long id) {
         Optional<Security> security = securityService.getSecurityById(id);
         if (security.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            model.addAttribute("message", "Security not found: id=" + id);
-            return "innerError";
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        model.addAttribute("security", security.get());
-        return "editSecurity";
+        return new ResponseEntity<>(security.get(), HttpStatus.OK);
     }
 
     // Create (with user creation)
     @PostMapping("/registration")
-    public String registration(@ModelAttribute @Valid RegistrationDto requestDto,
-                               BindingResult bindingResult) throws SQLException {
+    public ResponseEntity<RegistrationDto> registration(@RequestBody RegistrationDto requestDto,
+                                                        BindingResult bindingResult) throws SQLException {
         if (bindingResult.hasErrors()) {
             System.out.println(bindingResult.getAllErrors());
-            return "registration";
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         securityService.registration(requestDto);
-        return "redirect:/user/all-users";
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     // Update
-    @PostMapping("/update")
-    public String updateSecurity(@ModelAttribute("security") Security security,
-                                 Model model,
-                                 HttpServletResponse response) {
+    @PutMapping("/update")
+    public ResponseEntity<Security> updateSecurity(@RequestBody Security security) {
         Optional<Security> securityUpdated = securityService.updateSecurity(security);
         if (securityUpdated.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            model.addAttribute("message", "Security not found.");
-            return "innerError";
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        return "redirect:/user/all-users";
+        return new ResponseEntity<>(securityUpdated.get(), HttpStatus.OK);
     }
 
     // Delete
-    @PostMapping("/delete")
-    public String deleteSecurity(@RequestParam("id") Long id,
-                                 Model model,
-                                 HttpServletResponse response) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deleteSecurity(@PathVariable("id") @Parameter(description = "Security id") Long id) {
         Optional<Security> securityDeleted = securityService.deleteSecurity(id);
         if (securityDeleted.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_CONFLICT);
-            model.addAttribute("message", "Security is not deleted.");
-            return "innerError";
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        return "redirect:/user/all-users";
-    }
-
-    @GetMapping("/delete/{id}")
-    public String showDeleteSecurityPage(@PathVariable("id") Long id, Model model, HttpServletResponse response) {
-        Optional<Security> security = securityService.getSecurityById(id);
-        if (security.isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            model.addAttribute("message", "Security not found: id=" + id);
-            return "innerError";
-        }
-        model.addAttribute("security", security.get());
-        return "deleteSecurity";
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
